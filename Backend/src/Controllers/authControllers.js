@@ -1,6 +1,8 @@
 import User from '../Modules/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+// VITE_API_URL=hackthoan03-production.up.railway.app
+
 
 
 export const registerUser = async (req, res) => {
