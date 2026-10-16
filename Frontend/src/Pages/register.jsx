@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../api/axios.js"; // Aap ki api.js file ka path (apne folder structure ke mutabiq check kar lein)
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -27,22 +27,9 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      // Yahan fetch ke bajaye axios wala 'api' instance use kiya hai
+      const response = await api.post("/api/auth/register", formData);
+      const data = response.data;
 
       setMessage("Registration successful!");
 
@@ -50,7 +37,9 @@ const Register = () => {
         navigate("/login");
       }, 1000);
     } catch (error) {
-      setMessage(error.message);
+      setMessage(
+        error.response?.data?.message || error.message || "Registration failed"
+      );
     } finally {
       setLoading(false);
     }

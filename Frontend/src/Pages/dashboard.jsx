@@ -1,7 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios.js"; // Aap ki api.js file ka path (apne folder structure ke mutabiq check kar lein)
 
 const Dashboard = () => {
   const { token, user, logout } = useAuth();
@@ -14,26 +14,15 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/dashboard",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to load dashboard"
-          );
-        }
+        // Yahan fetch ke bajaye axios wala 'api' instance use kiya hai
+        const response = await api.get("/api/dashboard");
+        const data = response.data;
 
         setUserName(data.user.name);
       } catch (err) {
-        setError(err.message);
+        setError(
+          err.response?.data?.message || err.message || "Failed to load dashboard"
+        );
       } finally {
         setLoading(false);
       }

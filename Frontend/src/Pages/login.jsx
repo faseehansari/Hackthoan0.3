@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
+import api from "../api/axios"; // Aap ki api.js file ka path (apne folder structure ke mutabiq adjust kar lein)
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -28,24 +28,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      // Yahan ab hum fetch ke bajaye axios wala 'api' instance use kar rahe hain
+      // Jo khud-ba-khud VITE_API_URL utha lega (.env se)
+      const response = await api.post("/api/auth/login", formData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Login failed"
-        );
-      }
+      const data = response.data;
 
       // Save user and token in AuthContext
       login(data.user, data.token);
@@ -53,7 +40,9 @@ const Login = () => {
       // Open dashboard
       navigate("/dashboard", { replace: true });
     } catch (error) {
-      setMessage(error.message);
+      setMessage(
+        error.response?.data?.message || error.message || "Login failed"
+      );
     } finally {
       setLoading(false);
     }
